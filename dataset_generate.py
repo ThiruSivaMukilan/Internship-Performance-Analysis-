@@ -1,29 +1,16 @@
 import pandas as pd
 import numpy as np
 import os
-
 np.random.seed(42)
-
 rows = 5000
 data = []
-
 os.makedirs("data", exist_ok=True)
-
 for i in range(rows):
     intern_id = f"RX{str(i+1).zfill(4)}"
-
-    # Balanced performance selection
     perf_type = np.random.choice(['high', 'medium', 'low'], p=[0.3, 0.4, 0.3])
-
-    # -------------------------------
-    # REALISTIC OVERLAPPING DATA
-    # -------------------------------
-
-    # Common base values (shared randomness)
     base_sprint = np.random.randint(4, 8)
     base_tasks = np.random.randint(8, 15)
     base_meetings = np.random.randint(15, 25)
-
     if perf_type == 'high':
         sprints_total = base_sprint
         sprints_done = np.random.randint(int(base_sprint*0.7), base_sprint+1)
@@ -56,7 +43,7 @@ for i in range(rows):
 
         punctuality = np.random.choice([0, 1])
 
-    else:  # low
+    else: 
         sprints_total = base_sprint
         sprints_done = np.random.randint(1, int(base_sprint*0.7))
 
@@ -71,26 +58,18 @@ for i in range(rows):
         attendance = np.random.normal(55, 30)
 
         punctuality = np.random.choice([0, 1], p=[0.7, 0.3])
-
-    # -------------------------------
-    # EXTRA RANDOMNESS (KEY FIX 🔥)
-    # -------------------------------
     if np.random.rand() < 0.1:
         # flip behavior randomly (real-world inconsistency)
         code_review_score += np.random.normal(0, 30)
         attendance += np.random.normal(0, 30)
-
-    # Clip values
     code_review_score = np.clip(code_review_score, 0, 100)
     deadline_met = np.clip(deadline_met, 0, 100)
     attendance = np.clip(attendance, 0, 100)
-
     # Missing values
     if np.random.rand() < 0.05:
         code_review_score = None
     if np.random.rand() < 0.05:
         attendance = None
-
     data.append([
         intern_id,
         sprints_done,
@@ -105,7 +84,6 @@ for i in range(rows):
         punctuality,
         perf_type
     ])
-
 # Columns
 columns = [
     "intern_id",
@@ -123,10 +101,8 @@ columns = [
 ]
 
 df = pd.DataFrame(data, columns=columns)
-
 df.to_csv("data/real_world_intern_data.csv", index=False)
-
-print("✅ Realistic dataset created successfully!")
+print(" Realistic dataset created successfully!")
 print(df.head())
 print("\nClass Distribution:")
 print(df["performance"].value_counts())
