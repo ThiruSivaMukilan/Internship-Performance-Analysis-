@@ -22,6 +22,10 @@ class InternData(BaseModel):
     initiative_score: float
 
 # Test route
+@app.get("/")
+def home():
+    return {"message": "Intern Performance API Live 🚀"}
+
 @app.post("/predict")
 def predict(data: InternData):
 
