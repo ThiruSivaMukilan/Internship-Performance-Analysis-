@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Intern Details - {{ intern.intern_id }}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .header {
+            background: #243b55;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            position: relative;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 15px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-right: 25px;
+            border: 3px solid #243b55;
+        }
+
+        .intern-info h2 {
+            margin: 0 0 10px 0;
+            color: #243b55;
+            font-size: 28px;
+        }
+
+        .prediction-badge {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .pred-High { background: #28a745; box-shadow: 0px 4px 10px rgba(40,167,69,0.3); }
+        .pred-Medium { background: #ffc107; color: #333; box-shadow: 0px 4px 10px rgba(255,193,7,0.3); }
+        .pred-Low { background: #dc3545; box-shadow: 0px 4px 10px rgba(220,53,69,0.3); }
+
+        h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 5px solid #243b55;
+            transition: 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .metric-card h4 {
+            margin: 0 0 10px 0;
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .metric-card p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #222;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="/dashboard" class="back-btn">⬅ Back</a>
+    Intern Performance Profile
+</div>
+
+<div class="container">
+    <div class="profile-header">
+        <img class="avatar" src="https://i.pravatar.cc/150?u={{ intern.intern_id }}">
+        <div class="intern-info">
+            <h2>Intern ID: {{ intern.intern_id }}</h2>
+            <div class="prediction-badge pred-{{ prediction }}">
+                Predicted Performance: {{ prediction }}
+            </div>
+        </div>
+    </div>
+
+    <h3>Detailed Metrics</h3>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h4>Attendance</h4>
+            <p>{{ "%.1f"|format(intern.attendance) }}%</p>
+        </div>
+        <div class="metric-card">
+            <h4>Task Quality</h4>
+            <p>{{ "%.1f"|format(intern.task_quality) }}</p>
+        </div>
+        <div class="metric-card">
+            <h4>Sprint Completion</h4>
+            <p>{{ "%.1f"|format(intern.sprint_completion) }}%</p>
+        </div>
+        <div class="metric-card">
+            <h4>Deadline Met</h4>
+            <p>{{ "%.1f"|format(intern.deadline_met) }}%</p>
+        </div>
+        <div class="metric-card">
+            <h4>Communication</h4>
+            <p>{{ "%.1f"|format(intern.communication) }}</p>
+        </div>
+        <div class="metric-card">
+            <h4>Initiative</h4>
+            <p>{{ "%.1f"|format(intern.initiative_score) }}</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

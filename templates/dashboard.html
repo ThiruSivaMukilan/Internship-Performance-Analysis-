@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #f4f6f9;
+        }
+
+        .header {
+            background: #243b55;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #243b55;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .search-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #searchInput {
+            width: 50%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    Intern Performance Dashboard
+</div>
+
+<div class="search-container">
+    <input type="text" id="searchInput" onkeyup="searchInterns()" placeholder="Search Intern ID... (e.g. RX0001)">
+</div>
+
+<div class="container" id="internContainer">
+
+    {% for intern in interns %}
+    <div class="card">
+
+        <!-- Dummy Avatar -->
+        <img class="avatar" src="https://i.pravatar.cc/150?u={{ intern.intern_id }}">
+
+        <h3>{{ intern.intern_id }}</h3>
+
+        <a href="/intern/{{ intern.intern_id }}" class="btn">View</a>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+<script>
+function searchInterns() {
+    let input = document.getElementById('searchInput').value.toUpperCase();
+    let cards = document.getElementById('internContainer').getElementsByClassName('card');
+
+    for (let i = 0; i < cards.length; i++) {
+        let title = cards[i].getElementsByTagName("h3")[0];
+        if (title) {
+            let txtValue = title.textContent || title.innerText;
+            if (txtValue.toUpperCase().indexOf(input) > -1) {
+                cards[i].style.display = "";
+            } else {
+                cards[i].style.display = "none";
+            }
+        }       
+    }
+}
+</script>
+
+</body>
+</html>

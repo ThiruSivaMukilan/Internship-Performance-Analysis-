@@ -1,8 +1,7 @@
 import pickle
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
-import matplotlib.pyplot as plt
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import accuracy_score, classification_report
 
 # Load data
 X_train = pickle.load(open("models/X_train.pkl", "rb"))
@@ -10,57 +9,53 @@ y_train = pickle.load(open("models/y_train.pkl", "rb"))
 X_test = pickle.load(open("models/X_test.pkl", "rb"))
 y_test = pickle.load(open("models/y_test.pkl", "rb"))
 
-print("✅ Data Loaded Successfully")
+print("Data Loaded Successfully")
 
 # Base model
-rf = RandomForestClassifier(random_state=42)
-
-# Improved parameter grid
-param_grid = {
-    "n_estimators": [100, 200, 300],
-    "max_depth": [5, 10, 15, None],
-    "min_samples_split": [2, 5, 10],
-    "min_samples_leaf": [1, 2, 4]
-}
-
-# Grid Search
-grid = GridSearchCV(
-    rf,
-    param_grid,
-    cv=3,
-    scoring='accuracy',
-    n_jobs=-1
+rf = RandomForestClassifier(
+    random_state=42,
+    class_weight='balanced'
 )
 
-print(" Starting Hyperparameter Tuning...")
+# 🔥 BIGGER SEARCH SPACE
+param_dist = {
+    "n_estimators": [200, 300, 400, 500],
+    "max_depth": [None, 10, 20, 30],
+    "min_samples_split": [2, 5, 10],
+    "min_samples_leaf": [1, 2, 4],
+    "max_features": ['sqrt', 'log2', None],
+    "bootstrap": [True, False]
+}
 
-# Train
-grid.fit(X_train, y_train)
+# 🔥 RANDOM SEARCH (BETTER THAN GRID)
+search = RandomizedSearchCV(
+    rf,
+    param_distributions=param_dist,
+    n_iter=25,              # more combinations
+    cv=5,
+    scoring='f1_weighted',
+    n_jobs=-1,
+    random_state=42
+)
 
-print(" Best Parameters:", grid.best_params_)
+print(" Hyperparameter tuning started...")
 
-# Best model
-best_model = grid.best_estimator_
+search.fit(X_train, y_train)
 
-# Predict
+print("Best Parameters:", search.best_params_)
+
+best_model = search.best_estimator_
+
+# Prediction
 y_pred = best_model.predict(X_test)
 
 # Accuracy
-accuracy = accuracy_score(y_test, y_pred)
-print("\n Tuned Model Accuracy:", round(accuracy, 3))
+acc = accuracy_score(y_test, y_pred)
 
-# Classification report
-print("\n Classification Report:\n")
-print(classification_report(y_test, y_pred))
+print("\n Final Accuracy:", acc)
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
 
-# Confusion Matrix
-cm = confusion_matrix(y_test, y_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-disp.plot()
-plt.title("Confusion Matrix - Tuned Model")
-plt.show()
-
-# Save final model
+# Save model
 pickle.dump(best_model, open("models/final_model.pkl", "wb"))
 
-print("\n Final Model Saved Successfully!")
+print("\n Tuned Model Saved Successfully")

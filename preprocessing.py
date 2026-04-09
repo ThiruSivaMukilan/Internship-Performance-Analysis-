@@ -7,7 +7,7 @@ df = pd.read_csv("data/processed_intern_data.csv")
 print("Loaded Data:")
 print(df.head())
 df.fillna(df.mean(numeric_only=True), inplace=True)
-X = df.drop("performance", axis=1)
+X = df.drop(["performance", "intern_id"], axis=1)
 y = df["performance"]
 y = y.map({
     "low": 0,
