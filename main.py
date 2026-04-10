@@ -19,9 +19,7 @@ df = pd.read_csv("data/processed_intern_data.csv")
 # ---------------------------
 @app.get("/", response_class=HTMLResponse)
 async def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {
-        "request": request
-    })
+    return templates.TemplateResponse(request=request, name="login.html")
 
 # ---------------------------
 # LOGIN POST
@@ -30,13 +28,11 @@ async def login_page(request: Request):
 def login(request: Request, username: str = Form(...), password: str = Form(...)):
 
     if username == "admin" and password == "admin":
-        return templates.TemplateResponse("dashboard.html", {
-            "request": request,
+        return templates.TemplateResponse(request=request, name="dashboard.html", context={
             "interns": df.to_dict(orient="records")
         })
 
-    return templates.TemplateResponse("login.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="login.html", context={
         "error": "Invalid Username or Password"
     })
 
@@ -45,8 +41,7 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
 # ---------------------------
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="dashboard.html", context={
         "interns": df.to_dict(orient="records")
     })
 
@@ -60,8 +55,7 @@ def intern_detail(request: Request, intern_id: str):
 
     # ❌ safety check
     if intern_df.empty:
-        return templates.TemplateResponse("dashboard.html", {
-            "request": request,
+        return templates.TemplateResponse(request=request, name="dashboard.html", context={
             "interns": df.to_dict(orient="records"),
             "error": "Intern not found"
         })
@@ -104,8 +98,7 @@ def intern_detail(request: Request, intern_id: str):
 
     result = ["Low", "Medium", "High"][pred]
 
-    return templates.TemplateResponse("detail.html", {
-        "request": request,
+    return templates.TemplateResponse(request=request, name="detail.html", context={
         "intern": intern.to_dict(),   # 🔥 IMPORTANT FIX
         "prediction": result
     })
