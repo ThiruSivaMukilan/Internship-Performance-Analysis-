@@ -237,7 +237,7 @@
 <div class="container">
     <div class="profile-card">
         <div class="avatar-container">
-            <img class="avatar" src="https://ui-avatars.com/api/?name={{ intern.intern_id }}&background=1e293b&color=fff&size=150" alt="Avatar">
+            <img class="avatar" src="https://i.pravatar.cc/150?u={{ intern.intern_id }}" alt="Intern Photo">
         </div>
         <div class="intern-info">
             <h2>{{ intern.intern_id }}</h2>
@@ -278,10 +278,10 @@
 
     <!-- Charts -->
     <div class="charts-container">
-        <!-- Radar Chart -->
+        <!-- Line Chart -->
         <div class="chart-card">
-            <h3 class="chart-header">Skill Polygon (Normalized)</h3>
-            <canvas id="radarChart"></canvas>
+            <h3 class="chart-header">Performance Trajectory (Line)</h3>
+            <canvas id="lineChart"></canvas>
         </div>
         <!-- Bar Graph -->
         <div class="chart-card">
@@ -306,40 +306,41 @@
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.font.family = "'Inter', sans-serif";
 
-    // 1. Radar Chart (Skill Polygon)
-    const ctxRadar = document.getElementById('radarChart').getContext('2d');
-    new Chart(ctxRadar, {
-        type: 'radar',
+    // 1. Line Chart (Skill Trajectory)
+    const ctxLine = document.getElementById('lineChart').getContext('2d');
+    new Chart(ctxLine, {
+        type: 'line',
         data: {
             labels: ['Attendance', 'Task Quality', 'Communication', 'Initiative', 'Sprint Comp', 'Deadline'],
             datasets: [{
-                label: 'Intern Profile',
+                label: 'Score (out of 100)',
                 data: [attendance, quality, communication, initiative, sprint, deadline],
-                backgroundColor: 'rgba(192, 132, 252, 0.2)', // Soft Purple
-                borderColor: '#c084fc',
+                backgroundColor: 'rgba(59, 130, 246, 0.2)', // Soft Blue
+                borderColor: '#3b82f6',
                 pointBackgroundColor: '#fff',
-                pointBorderColor: '#c084fc',
-                pointHoverBackgroundColor: '#c084fc',
+                pointBorderColor: '#3b82f6',
+                pointHoverBackgroundColor: '#3b82f6',
                 pointHoverBorderColor: '#fff',
-                borderWidth: 2,
+                borderWidth: 3,
+                tension: 0.4, // smooth curve
+                fill: true
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                r: {
-                    angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                    pointLabels: {
-                        color: '#cbd5e1',
-                        font: { size: 12, weight: '600' }
-                    },
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                    ticks: { color: '#64748b' }
+                },
+                x: {
+                    grid: { display: false },
                     ticks: {
-                        display: false,
-                        max: 100,
-                        min: 0,
-                        stepSize: 20
+                        color: '#cbd5e1',
+                        font: { size: 11, weight: '600' }
                     }
                 }
             },

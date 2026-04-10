@@ -4,6 +4,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 import pandas as pd
 import pickle
 import numpy as np
+import json
+import os
 app = FastAPI()
 # Templates
 templates = Jinja2Templates(directory="templates")
@@ -13,6 +15,21 @@ scaler = pickle.load(open("models/scaler.pkl", "rb"))
 
 # Load dataset
 df = pd.read_csv("data/processed_intern_data.csv")
+
+# ---------------------------
+# USER MANAGEMENT (JSON)
+# ---------------------------
+USERS_FILE = "users.json"
+
+def load_users():
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "r") as f:
+            return json.load(f)
+    return {"admin": "admin"} # Fallback demo account
+
+def save_users(users):
+    with open(USERS_FILE, "w") as f:
+        json.dump(users, f)
 
 # ---------------------------
 # LOGIN PAGE
@@ -26,14 +43,42 @@ async def login_page(request: Request):
 # ---------------------------
 @app.post("/login", response_class=HTMLResponse)
 def login(request: Request, username: str = Form(...), password: str = Form(...)):
+    
+    users = load_users()
 
-    if username == "admin" and password == "admin":
+    if username in users and users[username] == password:
         return templates.TemplateResponse(request=request, name="dashboard.html", context={
             "interns": df.to_dict(orient="records")
         })
 
     return templates.TemplateResponse(request=request, name="login.html", context={
         "error": "Invalid Username or Password"
+    })
+
+# ---------------------------
+# REGISTER GET
+# ---------------------------
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(request: Request):
+    return templates.TemplateResponse(request=request, name="register.html")
+
+# ---------------------------
+# REGISTER POST
+# ---------------------------
+@app.post("/register", response_class=HTMLResponse)
+def register(request: Request, company_name: str = Form(...), username: str = Form(...), password: str = Form(...)):
+    users = load_users()
+    
+    if username in users:
+        return templates.TemplateResponse(request=request, name="register.html", context={
+            "error": "Username already exists! Choose another."
+        })
+        
+    users[username] = password
+    save_users(users)
+    
+    return templates.TemplateResponse(request=request, name="login.html", context={
+        "success": f"Registration successful for {company_name}! You can now log in."
     })
 
 # ---------------------------

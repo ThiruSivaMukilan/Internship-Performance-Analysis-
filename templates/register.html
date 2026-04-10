@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Platform Login</title>
+    <title>Company Registration</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -15,8 +15,8 @@
             --glass-border: rgba(255, 255, 255, 0.1);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.5);
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.5);
         }
 
         body {
@@ -53,7 +53,7 @@
             margin-bottom: 25px;
             font-size: 24px;
             font-weight: 800;
-            background: linear-gradient(to right, #60a5fa, #c084fc);
+            background: linear-gradient(to right, #34d399, #10b981);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -85,14 +85,14 @@
         }
 
         input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+            border-color: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
 
         button {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #3b82f6, #4f46e5);
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             border: none;
             border-radius: 10px;
@@ -116,7 +116,7 @@
         }
 
         .footer-links a {
-            color: #60a5fa;
+            color: #34d399;
             text-decoration: none;
             font-weight: 600;
         }
@@ -134,38 +134,28 @@
             margin-top: 20px;
             font-size: 13px;
         }
-
-        .success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #34d399;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
     </style>
 </head>
 <body>
 
 <div class="login-box">
-    <h2>Company Portal Login</h2>
+    <h2>Create Company Account</h2>
 
-    {% if success %}
-        <div class="success">{{ success }}</div>
-    {% endif %}
-
-    <form method="post" action="/login">
+    <form method="post" action="/register">
         <div class="input-group">
-            <label>Username</label>
-            <input type="text" name="username" placeholder="company_user" required>
+            <label>Company Name</label>
+            <input type="text" name="company_name" placeholder="TechSoft Inc." required>
         </div>
         <div class="input-group">
-            <label>Password</label>
+            <label>Choose Username</label>
+            <input type="text" name="username" placeholder="techsoft_admin" required>
+        </div>
+        <div class="input-group">
+            <label>Create Password</label>
             <input type="password" name="password" placeholder="••••••••" required>
         </div>
 
-        <button type="submit">Sign In to Dashboard</button>
+        <button type="submit">Register Company</button>
     </form>
 
     {% if error %}
@@ -173,8 +163,8 @@
     {% endif %}
 
     <div class="footer-links">
-        Don't have a company account? <br><br>
-        <a href="/register">Register your Company here</a>
+        Already have an account? <br><br>
+        <a href="/">← Back to Login</a>
     </div>
 </div>
 
