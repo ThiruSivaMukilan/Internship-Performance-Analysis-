@@ -1,120 +1,237 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intern Dashboard</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial;
-            background: #f4f6f9;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-        .header {
-            background: #243b55;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 22px;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #020617, #0f172a, #172554);
+    color: white;
+}
 
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
+/* HEADER */
+.header {
+    padding: 20px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: 800;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+}
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-            transition: 0.3s;
-        }
+/* SEARCH */
+.search-box {
+    text-align: center;
+    margin: 20px 0;
+}
 
-        .card:hover {
-            transform: scale(1.05);
-        }
+.search-box input {
+    width: 300px;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: #1e293b;
+    color: white;
+}
 
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
+/* FILTER BUTTONS */
+.filter-btn {
+    padding: 8px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    background: #1e293b;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-        .btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 15px;
-            background: #243b55;
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-        }
+.filter-btn:hover {
+    background: #3b82f6;
+}
 
-        .search-container {
-            text-align: center;
-            margin: 20px 0;
-        }
+/* GRID */
+.container {
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+}
 
-        #searchInput {
-            width: 50%;
-            padding: 12px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
-        }
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: 0.3s;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
 
-    </style>
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(59,130,246,0.6);
+}
+
+/* AVATAR */
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #9333ea);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0 auto 15px;
+}
+
+/* INTERN ID */
+.intern-id {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* INFO */
+.info {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 10px;
+}
+
+/* BADGE */
+.badge {
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.high { background: #10b981; }
+.medium { background: #f59e0b; }
+.low { background: #ef4444; }
+
+/* BUTTON */
+.view-btn {
+    margin-top: 15px;
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 8px;
+    background: #3b82f6;
+    color: white;
+    text-decoration: none;
+}
+
+.view-btn:hover {
+    background: #2563eb;
+}
+
+/* ERROR */
+.error {
+    color: red;
+    text-align: center;
+}
+</style>
 </head>
 
 <body>
 
 <div class="header">
-    Intern Performance Dashboard
+    Intern Performance Dashboard 
 </div>
 
-<div class="search-container">
-    <input type="text" id="searchInput" onkeyup="searchInterns()" placeholder="Search Intern ID... (e.g. RX0001)">
+<!-- SEARCH -->
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search Intern ID...">
 </div>
 
-<div class="container" id="internContainer">
 
-    {% for intern in interns %}
-    <div class="card">
 
-        <!-- Dummy Avatar -->
-        <img class="avatar" src="https://i.pravatar.cc/150?u={{ intern.intern_id }}">
+<div class="container">
 
-        <h3>{{ intern.intern_id }}</h3>
+{% if error %}
+    <div class="error">{{ error }}</div>
+{% endif %}
 
-        <a href="/intern/{{ intern.intern_id }}" class="btn">View</a>
+{% for intern in interns %}
+<div class="card"
+     data-id="{{ intern.intern_id }}"
+     data-performance="{{ intern.performance }}">
 
+    <div class="avatar">
+        {{ intern.intern_id[0] }}
     </div>
-    {% endfor %}
+
+    <div class="intern-id">
+        {{ intern.intern_id }}
+    </div>
+
+    <div class="info">
+        Attendance: {{ "%.1f"|format(intern.attendance) }}%
+    </div>
+
+    <div class="info">
+        Quality: {{ "%.1f"|format(intern.task_quality) }}
+    </div>
+
+    <div class="badge 
+        {% if intern.performance == 'High' %}high
+        {% elif intern.performance == 'Medium' %}medium
+        {% else %}low
+        {% endif %}
+    ">
+        {{ intern.performance }}
+    </div>
+
+    <br>
+
+    <a href="/intern/{{ intern.intern_id }}" class="view-btn">
+        View Details
+    </a>
+
+</div>
+{% endfor %}
 
 </div>
 
 <script>
-function searchInterns() {
-    let input = document.getElementById('searchInput').value.toUpperCase();
-    let cards = document.getElementById('internContainer').getElementsByClassName('card');
+let currentFilter = "all";
 
-    for (let i = 0; i < cards.length; i++) {
-        let title = cards[i].getElementsByTagName("h3")[0];
-        if (title) {
-            let txtValue = title.textContent || title.innerText;
-            if (txtValue.toUpperCase().indexOf(input) > -1) {
-                cards[i].style.display = "";
-            } else {
-                cards[i].style.display = "none";
-            }
-        }       
-    }
+function filterCards(type) {
+    currentFilter = type;
+    applyFilters();
+}
+
+document.getElementById("searchInput").addEventListener("keyup", applyFilters);
+
+function applyFilters() {
+    let searchValue = document.getElementById("searchInput").value.toLowerCase();
+    let cards = document.querySelectorAll(".card");
+
+    cards.forEach(card => {
+        let id = card.getAttribute("data-id").toLowerCase();
+        let perf = card.getAttribute("data-performance");
+
+        let matchSearch = id.includes(searchValue);
+        let matchFilter = (currentFilter === "all" || perf === currentFilter);
+
+        if (matchSearch && matchFilter) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
 }
 </script>
 
