@@ -1,14 +1,17 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Body
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 import pandas as pd
 import pickle
 import numpy as np
 import json
 import os
+
 app = FastAPI()
+
 # Templates
 templates = Jinja2Templates(directory="templates")
+
 # Load model & scaler
 model = pickle.load(open("models/final_model.pkl", "rb"))
 scaler = pickle.load(open("models/scaler.pkl", "rb"))
@@ -25,7 +28,7 @@ def load_users():
     if os.path.exists(USERS_FILE):
         with open(USERS_FILE, "r") as f:
             return json.load(f)
-    return {"admin": "admin"} # Fallback demo account
+    return {"admin": "admin"}  # demo login
 
 def save_users(users):
     with open(USERS_FILE, "w") as f:
@@ -56,7 +59,7 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
     })
 
 # ---------------------------
-# REGISTER GET
+# REGISTER PAGE
 # ---------------------------
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
@@ -67,18 +70,19 @@ async def register_page(request: Request):
 # ---------------------------
 @app.post("/register", response_class=HTMLResponse)
 def register(request: Request, company_name: str = Form(...), username: str = Form(...), password: str = Form(...)):
-    users = load_users()
     
+    users = load_users()
+
     if username in users:
         return templates.TemplateResponse(request=request, name="register.html", context={
-            "error": "Username already exists! Choose another."
+            "error": "Username already exists!"
         })
-        
+
     users[username] = password
     save_users(users)
-    
+
     return templates.TemplateResponse(request=request, name="login.html", context={
-        "success": f"Registration successful for {company_name}! You can now log in."
+        "success": f"Registered successfully for {company_name}"
     })
 
 # ---------------------------
@@ -98,7 +102,6 @@ def intern_detail(request: Request, intern_id: str):
 
     intern_df = df[df["intern_id"] == intern_id]
 
-    # ❌ safety check
     if intern_df.empty:
         return templates.TemplateResponse(request=request, name="dashboard.html", context={
             "interns": df.to_dict(orient="records"),
@@ -107,7 +110,7 @@ def intern_detail(request: Request, intern_id: str):
 
     intern = intern_df.iloc[0]
 
-    # 🔥 Feature Engineering (MUST MATCH TRAINING)
+    # Feature Engineering
     work_quality = (intern["task_quality"] + intern["deadline_met"]) / 2
     productivity = (intern["sprint_completion"] + intern["initiative_score"]) / 2
 
@@ -120,7 +123,6 @@ def intern_detail(request: Request, intern_id: str):
         0.1 * intern["communication"]
     )
 
-    # 🔥 Model input (order MUST MATCH training)
     input_data = np.array([[  
         intern["attendance"],
         intern["punctuality"],
@@ -135,15 +137,41 @@ def intern_detail(request: Request, intern_id: str):
         performance_score
     ]])
 
-    # Scale
     input_scaled = scaler.transform(input_data)
 
-    # Predict
     pred = model.predict(input_scaled)[0]
-
     result = ["Low", "Medium", "High"][pred]
 
     return templates.TemplateResponse(request=request, name="detail.html", context={
-        "intern": intern.to_dict(),   # 🔥 IMPORTANT FIX
+        "intern": intern.to_dict(),
         "prediction": result
     })
+
+# ---------------------------
+# 🔥 PREDICTION API (SPRINT 4)
+# ---------------------------
+@app.post("/predict")
+def predict_api(data: dict = Body(...)):
+
+    input_data = np.array([[
+        data["attendance"],
+        data["punctuality"],
+        data["sprint_completion"],
+        data["task_quality"],
+        data["deadline_met"],
+        data["communication"],
+        data["collaboration"],
+        data["initiative_score"],
+        data["work_quality"],
+        data["productivity"],
+        data["performance_score"]
+    ]])
+
+    input_scaled = scaler.transform(input_data)
+
+    pred = model.predict(input_scaled)[0]
+    result = ["Low", "Medium", "High"][pred]
+
+    return {
+        "prediction": result
+    }
